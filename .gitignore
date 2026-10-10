@@ -1,0 +1,8 @@
+node_modules
+.next
+.env*.local
+next-env.d.ts
+*.tsbuildinfo
+
+# original/raw videos stay on your computer (too large for git); only the compressed copies in public/work are deployed
+/reels

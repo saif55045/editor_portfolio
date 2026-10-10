@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-void: #050507;
+  --color-ink: #0b0c10;
+  --color-graphite: #14161c;
+  --color-steel: #1f222b;
+  --color-fog: #8e919b;
+  --color-mist: #b9bcc6;
+  --color-snow: #f5f5f7;
+  --color-iris: #7c6cff;
+  --color-aqua: #3dd9f5;
+  --color-rose: #ff5c8a;
+  --color-amber: #ffb340;
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-serif: var(--font-instrument), Georgia, serif;
+}
+
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-bg-hover: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  --glass-shadow: 0 20px 60px -20px rgba(0, 0, 0, 0.6);
+  --leak: linear-gradient(120deg, #7c6cff 0%, #3dd9f5 35%, #ff5c8a 70%, #ffb340 100%);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --gutter: clamp(20px, 4vw, 64px);
+}
+
+html {
+  background: var(--color-void);
+  color-scheme: dark;
+}
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+
+body {
+  background: var(--color-void);
+  color: var(--color-snow);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+::selection { background: var(--color-iris); color: #fff; }
+
+/* ---------- Glass ---------- */
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-highlight), var(--glass-shadow);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  transition: background 0.4s var(--ease-out), border-color 0.4s var(--ease-out);
+}
+.glass:hover { background: var(--glass-bg-hover); }
+/* Same look without backdrop-filter, for cards whose contents are opaque anyway (far cheaper to paint). */
+.glass-lite {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-highlight), var(--glass-shadow);
+}
+.glass-static:hover { background: var(--glass-bg); }
+
+/* ---------- Typography helpers ---------- */
+.display {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 0.92;
+}
+.serif-i { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -0.02em; }
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-fog);
+}
+.text-leak {
+  background: var(--leak);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.name-sweep {
+  display: inline-block;
+  padding-right: 0.08em;
+  background: linear-gradient(100deg, #f5f5f7 0%, #f5f5f7 38%, #ffb340 46%, #ff5c8a 54%, #f5f5f7 63%, #f5f5f7 100%);
+  background-size: 260% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: sweep 6s cubic-bezier(.65,0,.35,1) 2.2s infinite;
+}
+@keyframes sweep {
+  0% { background-position: 100% 0; }
+  45%, 100% { background-position: 0% 0; }
+}
+
+.section { padding: clamp(56px, 11vw, 170px) var(--gutter); position: relative; }
+.wrap { max-width: 1440px; margin-inline: auto; }
+
+/* ---------- Film grain ---------- */
+.grain {
+  position: fixed;
+  inset: -15%;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation: grain 0.9s steps(6) infinite;
+  will-change: transform;
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-4%, 3%); }
+  40% { transform: translate(3%, -5%); }
+  60% { transform: translate(-6%, -2%); }
+  80% { transform: translate(5%, 4%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ---------- Page transition: the page you are leaving dims right away ---------- */
+main, footer { transition: opacity 0.22s ease; }
+html[data-leaving] main, html[data-leaving] footer { opacity: 0.12; }
+
+/* ---------- Misc ---------- */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+@keyframes marquee { to { transform: translateX(-50%); } }
+.marquee-track { animation: marquee 60s linear infinite; will-change: transform; }
+/* hovering (or focusing inside) a marquee pauses it */
+.marquee-scope:hover .marquee-track, .marquee-scope:focus-within .marquee-track { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none !important; }
+  .marquee { overflow-x: auto; }
+}
+@keyframes pulse-rec { 50% { opacity: 0.25; } }
+
+@media (pointer: fine) {
+  html.has-cursor, html.has-cursor * { cursor: none !important; }
+}
+
+:focus-visible { outline: 2px solid var(--color-iris); outline-offset: 3px; border-radius: 6px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .grain { animation: none; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--color-graphite); }
+}
+
+/* if JS is unavailable, never block the page behind the countdown cover */
+@media (scripting: none) { .leader-cover { display: none; } }
