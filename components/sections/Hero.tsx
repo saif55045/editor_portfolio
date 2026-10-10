@@ -8,6 +8,16 @@ import Magnetic from "@/components/ui/Magnetic";
 import Timecode from "@/components/ui/Timecode";
 import HeroCards from "./HeroCards";
 import { useStore } from "@/lib/store";
+import { REEL_SRC } from "@/content/media";
+
+let warmEl: HTMLVideoElement | null = null;
+function warmReel() {
+  if (warmEl || !REEL_SRC) return;
+  warmEl = document.createElement("video");
+  warmEl.preload = "auto";
+  warmEl.muted = true;
+  warmEl.src = REEL_SRC;
+}
 
 const LightLeak = dynamic(() => import("@/components/canvas/LightLeak"), { ssr: false });
 
@@ -115,7 +125,7 @@ export default function Hero() {
 
           <motion.div {...rise(0.75)} className="mt-8 flex flex-wrap items-center gap-3">
             <Magnetic strength={0.2}>
-              <button onClick={() => setReelOpen(true)} data-cursor="play" className="group flex items-center gap-3 rounded-full bg-snow py-2.5 pl-2.5 pr-6 text-base font-medium text-void shadow-[0_10px_40px_-10px_rgba(255,179,64,.6)] transition-shadow hover:shadow-[0_10px_50px_-5px_rgba(255,179,64,.85)]">
+              <button onClick={() => setReelOpen(true)} onPointerEnter={warmReel} onFocus={warmReel} onTouchStart={warmReel} data-cursor="play" className="group flex items-center gap-3 rounded-full bg-snow py-2.5 pl-2.5 pr-6 text-base font-medium text-void shadow-[0_10px_40px_-10px_rgba(255,179,64,.6)] transition-shadow hover:shadow-[0_10px_50px_-5px_rgba(255,179,64,.85)]">
                 <span className="grid h-10 w-10 place-items-center rounded-full bg-void text-snow transition-transform group-hover:scale-110">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden><path d="M3 1.5v11l9-5.5z" /></svg>
                 </span>
@@ -131,7 +141,7 @@ export default function Hero() {
 
         {/* ---------- animated reel stack ---------- */}
         <div className="min-w-0 lg:pr-8">
-          {intro && <HeroCards tiltX={mx} tiltY={my} running={active} />}
+          <HeroCards tiltX={mx} tiltY={my} running={active} ready={intro} />
         </div>
       </div>
     </section>

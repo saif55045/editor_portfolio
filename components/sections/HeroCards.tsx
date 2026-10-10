@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useGo } from "@/components/Transitions";
 import { motion, useSpring, useTransform, type MotionValue, type PanInfo } from "motion/react";
@@ -19,27 +19,38 @@ const SLOTS = [
 /** A real project: its poster always, and the real video playing (muted) while the card is in front. */
 function ReelCard({ p, idx, active, cycleKey }: { p: Project; idx: number; active: boolean; cycleKey: number }) {
   const [playing, setPlaying] = useState(false);
+  const vref = useRef<HTMLVideoElement>(null);
+
+  // The <video> stays mounted and buffered the whole time, so when a card comes to the front it
+  // starts instantly (no network wait, no remount). Only the front card plays; the rest stay paused.
   useEffect(() => {
-    if (!active) setPlaying(false);
-  }, [active]);
+    const v = vref.current;
+    if (!v) return;
+    if (active) {
+      v.currentTime = 0;
+      v.play().catch(() => {});
+    } else {
+      v.pause();
+      setPlaying(false);
+    }
+  }, [active, cycleKey]);
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-[22px]" style={{ background: `linear-gradient(165deg, ${p.hue[0]}, ${p.hue[1]})` }}>
       {p.poster && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={p.poster} alt="" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
+        <img src={p.poster} alt="" decoding="async" fetchPriority="high" className="absolute inset-0 h-full w-full object-cover" />
       )}
-      {active && p.video && (
+      {p.video && (
         <video
-          key={cycleKey}
+          ref={vref}
           src={p.video}
-          autoPlay
           muted
           loop
           playsInline
           preload="auto"
           onPlaying={() => setPlaying(true)}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${playing ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${playing && active ? "opacity-100" : "opacity-0"}`}
         />
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
@@ -67,7 +78,7 @@ function ReelCard({ p, idx, active, cycleKey }: { p: Project; idx: number; activ
   );
 }
 
-export default function HeroCards({ tiltX, tiltY, running }: { tiltX: MotionValue<number>; tiltY: MotionValue<number>; running: boolean }) {
+export default function HeroCards({ tiltX, tiltY, running, ready = true }: { tiltX: MotionValue<number>; tiltY: MotionValue<number>; running: boolean; ready?: boolean }) {
   const router = useRouter();
   const go$ = useGo();
   const [front, setFront] = useState(0);
@@ -80,10 +91,10 @@ export default function HeroCards({ tiltX, tiltY, running }: { tiltX: MotionValu
   const go = useCallback((dir: number) => setFront((f) => (f + dir + n) % n), [n]);
 
   useEffect(() => {
-    if (reduce || !running) return;
+    if (reduce || !running || !ready) return;
     const id = setTimeout(() => go(1), CYCLE);
     return () => clearTimeout(id);
-  }, [front, reduce, running, go]);
+  }, [front, reduce, running, ready, go]);
 
   const rotY = useSpring(useTransform(tiltX, [-0.5, 0.5], [-14, 14]), { stiffness: 90, damping: 18 });
   const rotX = useSpring(useTransform(tiltY, [-0.5, 0.5], [10, -10]), { stiffness: 90, damping: 18 });
@@ -114,7 +125,7 @@ export default function HeroCards({ tiltX, tiltY, running }: { tiltX: MotionValu
                   className="glass glass-static absolute left-1/2 top-1/2 -ml-[115px] -mt-[205px] aspect-[9/16] w-[230px] touch-pan-y select-none rounded-[30px] p-1.5"
                   style={{ zIndex: slot.z }}
                   initial={{ opacity: 0, y: 120, scale: 0.8 }}
-                  animate={{ x: slot.x, y: slot.y, rotate: slot.r, scale: slot.s, opacity: slot.o }}
+                  animate={ready ? { x: slot.x, y: slot.y, rotate: slot.r, scale: slot.s, opacity: slot.o } : { x: slot.x, y: 120, rotate: slot.r, scale: 0.8, opacity: 0 }}
                   transition={{ type: "spring", stiffness: 120, damping: 17, mass: 0.9, opacity: { duration: 0.5 } }}
                   whileHover={isFront ? { scale: 1.03 } : { y: slot.y - 12 }}
                   drag={isFront ? "x" : false}
@@ -124,7 +135,7 @@ export default function HeroCards({ tiltX, tiltY, running }: { tiltX: MotionValu
                   onTap={() => (isFront ? go$(`/work/${p.slug}`) : setFront(i))}
                   onKeyDown={(e) => e.key === "Enter" && (isFront ? go$(`/work/${p.slug}`) : setFront(i))}
                 >
-                  <ReelCard p={p} idx={i} active={isFront && running && !reduce} cycleKey={front} />
+                  <ReelCard p={p} idx={i} active={isFront && running && ready && !reduce} cycleKey={front} />
                 </motion.div>
               );
             })}

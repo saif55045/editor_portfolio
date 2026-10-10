@@ -61,10 +61,10 @@ function Card({ p, i }: { p: Project; i: number }) {
               />
               {p.poster && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={p.poster} alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-[1.12]" />
+                <img src={p.poster} alt="" decoding="async" fetchPriority={i < 4 ? "high" : "auto"} className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-[1.12]" />
               )}
               {p.video && (
-                <video ref={vid} src={p.video} muted loop playsInline preload="metadata" className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                <video ref={vid} src={p.video} muted loop playsInline preload={i < 4 ? "auto" : "metadata"} className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/15 transition-opacity duration-500 group-hover:from-black/85" />
               {/* light that follows the pointer */}

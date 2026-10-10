@@ -36,7 +36,7 @@ export default async function CaseStudy({ params }: { params: Promise<{ slug: st
               {p.youtube ? (
                 <YouTubeEmbed id={p.youtube} title={p.title} poster={p.poster} />
               ) : p.video ? (
-                <video src={p.video} poster={p.poster} controls playsInline preload="metadata" className="absolute inset-0 h-full w-full object-cover" />
+                <video src={p.video} poster={p.poster} controls playsInline preload="auto" className="absolute inset-0 h-full w-full object-cover" />
               ) : (
                 <span className="label absolute inset-x-0 bottom-6 text-center !text-white/80">Video coming soon</span>
               )}
