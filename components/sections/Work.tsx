@@ -6,6 +6,7 @@ import { categories, projects, type Project } from "@/content/data";
 import { SectionHead } from "@/components/motion/Reveal";
 import { TLink } from "@/components/Transitions";
 import { cn } from "@/lib/utils";
+import { cancelPreview, loadNow, queuePreview } from "@/lib/previewQueue";
 
 const spring = { stiffness: 170, damping: 19, mass: 0.7 };
 
@@ -15,6 +16,15 @@ function Card({ p, i }: { p: Project; i: number }) {
   // pointer position drives motion values + CSS variables — never React state, so hovering never re-renders
   const rx = useSpring(useMotionValue(0), spring);
   const ry = useSpring(useMotionValue(0), spring);
+
+  // previews load one at a time, in gallery order
+  useEffect(() => {
+    const v = vid.current;
+    const src = p.preview ?? p.video;
+    if (!v || !src) return;
+    queuePreview(v, src);
+    return () => cancelPreview(v);
+  }, [p.preview, p.video]);
 
   const move = (e: React.PointerEvent) => {
     const r = box.current!.getBoundingClientRect();
@@ -45,7 +55,7 @@ function Card({ p, i }: { p: Project; i: number }) {
       className="w-[min(72vw,300px)] shrink-0 snap-start"
       style={{ perspective: 900 }}
     >
-      <div ref={box} style={{ ["--x" as string]: 0.5, ["--y" as string]: 0.5 }} onPointerMove={move} onPointerLeave={leave} onPointerEnter={() => vid.current?.play().catch(() => {})}>
+      <div ref={box} style={{ ["--x" as string]: 0.5, ["--y" as string]: 0.5 }} onPointerMove={move} onPointerLeave={leave} onPointerEnter={() => { const v = vid.current; const src = p.preview ?? p.video; if (!v || !src) return; loadNow(v, src); v.play().catch(() => {}); }}>
         <TLink href={`/work/${p.slug}`} data-cursor="view" className="group block" prefetch>
           <motion.div
             style={{ rotateX: rx, rotateY: ry }}
@@ -63,8 +73,8 @@ function Card({ p, i }: { p: Project; i: number }) {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={p.poster} alt="" decoding="async" fetchPriority={i < 4 ? "high" : "auto"} className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-[1.12]" />
               )}
-              {p.video && (
-                <video ref={vid} src={p.video} muted loop playsInline preload={i < 4 ? "auto" : "metadata"} className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+              {(p.preview ?? p.video) && (
+                <video ref={vid} muted loop playsInline preload="none" className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/15 transition-opacity duration-500 group-hover:from-black/85" />
               {/* light that follows the pointer */}

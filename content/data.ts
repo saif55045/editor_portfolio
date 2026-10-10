@@ -41,6 +41,8 @@ export type Project = {
   hue: [string, string];
   /** files live in /public/work, e.g. "/work/clip-1.mp4" */
   video?: string;
+  /** short silent clip used for card hover / hero cards (loads in a blink); the full `video` loads on the project page */
+  preview?: string;
   poster?: string;
   /** YouTube video id for big files: the project page shows a click-to-load player */
   youtube?: string;
@@ -62,6 +64,7 @@ export const projects: Project[] = [
     tools: [], // add the tools you used for this one, e.g. ["CapCut"] (I can't tell from the video)
     hue: ["#3dd9f5", "#7c6cff"],
     video: "/work/behind-40k-deal.mp4",
+    preview: "/work/behind-40k-deal-preview.mp4",
     poster: "/work/behind-40k-deal.jpg",
     summary: "A talking-head explainer where animated UI graphics visualise each point as it is spoken.",
     challenge: "",
@@ -81,6 +84,7 @@ export const projects: Project[] = [
     tools: [], // add the tools you used for this one, e.g. ["CapCut"] (I can't tell from the video)
     hue: ["#ffb340", "#ff5c8a"],
     video: "/work/branding-secret-90.mp4",
+    preview: "/work/branding-secret-90-preview.mp4",
     poster: "/work/branding-secret-90.jpg",
     summary: "A high-contrast reel in black, white and red that turns a branding idea into bold, rhythmic typography and motion.",
     challenge: "",
@@ -100,6 +104,7 @@ export const projects: Project[] = [
     tools: [], // add the tools you used for this one, e.g. ["CapCut"] (I can't tell from the video)
     hue: ["#ff5c8a", "#ffb340"],
     video: "/work/complex-ideas-explainer.mp4",
+    preview: "/work/complex-ideas-explainer-preview.mp4",
     poster: "/work/complex-ideas-explainer.jpg",
     summary: "A collage-style explainer built from archival photos, cut-outs and kinetic type that makes a big idea easy to follow.",
     challenge: "",
@@ -119,6 +124,7 @@ export const projects: Project[] = [
     tools: [], // add the tools you used for this one, e.g. ["CapCut"] (I can't tell from the video)
     hue: ["#7c6cff", "#3dd9f5"],
     video: "/work/shahid-khan-story.mp4",
+    preview: "/work/shahid-khan-story-preview.mp4",
     poster: "/work/shahid-khan-story.jpg",
     summary: "A documentary-style short that tells a founder's story with kinetic type, B-roll and punchy red-and-white graphics.",
     challenge: "",
@@ -138,6 +144,7 @@ export const projects: Project[] = [
     tools: [], // add the tools you used for this one, e.g. ["CapCut"] (I can't tell from the video)
     hue: ["#3dd9f5", "#ff5c8a"],
     video: "/work/clients-come-to-me.mp4",
+    preview: "/work/clients-come-to-me-preview.mp4",
     poster: "/work/clients-come-to-me.jpg",
     summary: "A real-estate talking-head edit with screenshot callouts and glowing keywords that keep the hook moving.",
     challenge: "",
@@ -157,6 +164,7 @@ export const projects: Project[] = [
     tools: [], // add the tools you used for this one, e.g. ["CapCut"] (I can't tell from the video)
     hue: ["#7c6cff", "#ff5c8a"],
     video: "/work/how-you-talk.mp4",
+    preview: "/work/how-you-talk-preview.mp4",
     poster: "/work/how-you-talk.jpg",
     summary: "A podcast-style clip with animated captions and simple graphics that make a psychology point stick.",
     challenge: "",
@@ -176,6 +184,7 @@ export const projects: Project[] = [
     tools: [], // add the tools you used for this one, e.g. ["CapCut"] (I can't tell from the video)
     hue: ["#3dd9f5", "#7c6cff"],
     video: "/work/interest-media.mp4",
+    preview: "/work/interest-media-preview.mp4",
     poster: "/work/interest-media.jpg",
     summary: "A commentary edit that cuts between a presenter and interview footage, with clean captions and animated callouts.",
     challenge: "",
@@ -195,6 +204,7 @@ export const projects: Project[] = [
     tools: [], // add the tools you used for this one, e.g. ["CapCut"] (I can't tell from the video)
     hue: ["#ffb340", "#ff5c8a"],
     video: "/work/ready-to-buy-house.mp4",
+    preview: "/work/ready-to-buy-house-preview.mp4",
     poster: "/work/ready-to-buy-house.jpg",
     summary: "A walk-and-talk real-estate reel with stylish kinetic typography and on-screen visuals.",
     challenge: "",
@@ -214,6 +224,7 @@ export const projects: Project[] = [
     tools: [], // add the tools you used for this one, e.g. ["CapCut"] (I can't tell from the video)
     hue: ["#ff5c8a", "#ffb340"],
     video: "/work/my-version-of-creativity.mp4",
+    preview: "/work/my-version-of-creativity-preview.mp4",
     poster: "/work/my-version-of-creativity.jpg",
     summary: "A calm talking-head edit with captions timed to the voice and bold graphic inserts for emphasis.",
     challenge: "",
@@ -233,6 +244,7 @@ export const projects: Project[] = [
     tools: [], // add the tools you used for this one, e.g. ["CapCut"] (I can't tell from the video)
     hue: ["#7c6cff", "#3dd9f5"],
     video: "/work/listing-strategy.mp4",
+    preview: "/work/listing-strategy-preview.mp4",
     poster: "/work/listing-strategy.jpg",
     summary: "A property-marketing reel with elegant kinetic text, photo and video overlays and a phone-call UI moment.",
     challenge: "",
@@ -252,6 +264,7 @@ export const projects: Project[] = [
     tools: [], // add the tools you used for this one, e.g. ["CapCut"] (I can't tell from the video)
     hue: ["#3dd9f5", "#ff5c8a"],
     video: "/work/save-this-one.mp4",
+    preview: "/work/save-this-one-preview.mp4",
     poster: "/work/save-this-one.jpg",
     summary: "A creator tip with on-screen safe-zone boxes showing where the hook goes and what to keep clear.",
     challenge: "",
@@ -271,6 +284,7 @@ export const projects: Project[] = [
     tools: [], // add the tools you used for this one, e.g. ["CapCut"] (I can't tell from the video)
     hue: ["#7c6cff", "#ff5c8a"],
     video: "/work/how-ai-gets-its-answer.mp4",
+    preview: "/work/how-ai-gets-its-answer-preview.mp4",
     poster: "/work/how-ai-gets-its-answer.jpg",
     summary: "A hand-drawn style explainer that turns an AI concept into animated doodles synced to the voice.",
     challenge: "",
@@ -290,6 +304,7 @@ export const projects: Project[] = [
     tools: [], // add the tools you used for this one, e.g. ["CapCut"] (I can't tell from the video)
     hue: ["#7c6cff", "#ff5c8a"],
     video: "/work/before-after-edit.mp4",
+    preview: "/work/before-after-edit-preview.mp4",
     poster: "/work/before-after-edit.jpg",
     summary: "A raw-vs-edit breakdown: the same talking-head footage, then the finished cut with animated captions, emoji pops and designed transitions.",
     challenge: "",

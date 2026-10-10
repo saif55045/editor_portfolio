@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useGo } from "@/components/Transitions";
 import { motion, useSpring, useTransform, type MotionValue, type PanInfo } from "motion/react";
 import { projects, type Project } from "@/content/data";
+import { cancelPreview, loadNow, queuePreview } from "@/lib/previewQueue";
 
 const CYCLE = 4200; // ms each card stays in front
 const cards = projects.slice(0, 4);
@@ -23,10 +24,20 @@ function ReelCard({ p, idx, active, cycleKey }: { p: Project; idx: number; activ
 
   // The <video> stays mounted and buffered the whole time, so when a card comes to the front it
   // starts instantly (no network wait, no remount). Only the front card plays; the rest stay paused.
+  const src = p.preview ?? p.video;
+  // join the one-by-one loading line (hero cards go first)
+  useEffect(() => {
+    const v = vref.current;
+    if (!v || !src) return;
+    queuePreview(v, src);
+    return () => cancelPreview(v);
+  }, [src]);
+
   useEffect(() => {
     const v = vref.current;
     if (!v) return;
     if (active) {
+      if (src) loadNow(v, src); // front card must not wait for the line
       v.currentTime = 0;
       v.play().catch(() => {});
     } else {
@@ -41,14 +52,13 @@ function ReelCard({ p, idx, active, cycleKey }: { p: Project; idx: number; activ
         // eslint-disable-next-line @next/next/no-img-element
         <img src={p.poster} alt="" decoding="async" fetchPriority="high" className="absolute inset-0 h-full w-full object-cover" />
       )}
-      {p.video && (
+      {(p.preview ?? p.video) && (
         <video
           ref={vref}
-          src={p.video}
           muted
           loop
           playsInline
-          preload="auto"
+          preload="none"
           onPlaying={() => setPlaying(true)}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${playing && active ? "opacity-100" : "opacity-0"}`}
         />
